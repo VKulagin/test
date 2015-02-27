@@ -21,6 +21,11 @@
     RewriteRule ^(.*)$ frontend/web/$1 [L]
 #    RewriteRule ^(.*)$ frontend/web/index.php?q=$1 [L,QSA]
 
+
+
+
+
+
     RewriteCond %{REQUEST_URI} !^/(frontend|backend)/web/(assets|css|js)/
     RewriteCond %{REQUEST_URI} !index.php
     RewriteCond %{REQUEST_FILENAME} !-f [OR]
