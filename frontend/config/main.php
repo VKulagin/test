@@ -36,7 +36,7 @@ return [
                 '' => 'site/index',
                 
                 
-                '<action>'=>'site/<action>',
+                '<action>'=>'site/index',
             ],
         ], 
          'assetManager' => [

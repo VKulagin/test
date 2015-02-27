@@ -7,6 +7,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use frontend\models\Page;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
@@ -55,21 +56,45 @@ class SiteController extends Controller
     public function actions()
     {
         return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
-        ];
+                'error' => [
+                    'class' => 'yii\web\ErrorAction',
+                ],
+                'captcha' => [
+                    'class' => 'yii\captcha\CaptchaAction',
+                    'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                ],
+            ];
     }
 
     public function actionIndex()
     {
-        return $this->render('index');
+        if(!$_GET['action']) $_GET['action'] = Yii::$app->params['defaultPage'];
+        $page = new Page;
+        
+        $data = $page->findByPagename($_GET['action']);
+        if($data){
+            ob_start();
+            eval(" ?>".$data->pagecontent."<? ");
+            $data->pagecontent = ob_get_clean();
+            
+            return $this->render('index', array(
+                'data' => $data
+            ));
+        }
+        else{
+            return $this->render('error',[
+                'error' => [
+                    'class' => 'yii\web\ErrorAction',
+                ],
+                'message' => 'Страница не найдена!',
+                'captcha' => [
+                    'class' => 'yii\captcha\CaptchaAction',
+                    'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                ]
+                ]);
+        }
     }
-
+ 
     public function actionLogin()
     {
         if (!\Yii::$app->user->isGuest) {
@@ -109,16 +134,6 @@ class SiteController extends Controller
                 'model' => $model,
             ]);
         }
-    }
-
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
-
-    public function actionTest()
-    {
-        return $this->render('test');
     }
 
     public function actionSignup()
